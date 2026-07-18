@@ -1,0 +1,49 @@
+services:
+
+  bot:
+    build:
+      context: .
+      dockerfile: docker/development/Dockerfile
+
+    container_name: wa-bot
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - .env.development
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    command: npm run dev
+
+    depends_on:
+      - waha
+
+    restart: unless-stopped
+
+  waha:
+    image: devlikeapro/waha:latest
+
+    container_name: waha
+
+    ports:
+      - "3001:3000"
+
+    env_file:
+      - .env.development
+
+    environment:
+      WAHA_LOG_LEVEL: ${WAHA_LOG_LEVEL}
+      WAHA_API_KEY: ${WAHA_API_KEY}
+      WAHA_DASHBOARD_USERNAME: ${WAHA_DASHBOARD_USERNAME}
+      WAHA_DASHBOARD_PASSWORD: ${WAHA_DASHBOARD_PASSWORD}
+      WHATSAPP_SWAGGER_USERNAME: ${WHATSAPP_SWAGGER_USERNAME}
+      WHATSAPP_SWAGGER_PASSWORD: ${WHATSAPP_SWAGGER_PASSWORD}
+
+    volumes:
+      - ./sessions:/app/.sessions
+
+    restart: unless-stopped

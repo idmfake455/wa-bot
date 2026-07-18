@@ -1,0 +1,15 @@
+services:
+
+  bot:
+
+    build:
+      context: .
+      dockerfile: docker/production/Dockerfile
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - .env.production
+
+    restart: always

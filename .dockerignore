@@ -1,0 +1,17 @@
+node_modules
+.git
+.gitignore
+
+storage/logs
+storage/temp
+storage/downloads
+
+backup-auth
+backup-wwebjs_cache
+
+.env
+
+sessions
+temp
+Dockerfile
+docker-compose*.yml
