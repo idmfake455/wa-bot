@@ -15,5 +15,6 @@ app.use("/health", require("./routes/health.routes"));
 app.use("/waha", require("./routes/waha.routes"));
 app.use("/session", require("./routes/session.routes"));
 app.use("/message", require("./routes/message.routes"));
+app.use("/webhook", require("./routes/webhook.routes"));
 
 module.exports = app;

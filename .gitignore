@@ -1,7 +1,19 @@
-# Dependency
+ Dependencies
 node_modules/
 
 # Environment Variables
-.env*
+.env
+.env.*
 
+# WhatsApp Session
 sessions/
+
+# Logs
+logs/
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+.vscode/
