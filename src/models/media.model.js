@@ -1,16 +1,20 @@
-class Media{
+class Media {
 
-    constructor(){
+    constructor(data) {
 
-        this.filename = null;
+        this.id = data.id;
 
-        this.path = null;
+        this.filename = data.filename;
 
-        this.extension = null;
+        this.path = data.path;
 
-        this.mime = null;
+        this.mimetype = data.mimetype;
 
-        this.size = null;
+        this.extension = data.extension;
+
+        this.size = data.size;
+
+        this.source = data.source;
 
     }
 

@@ -5,23 +5,19 @@ class Message {
         const msg = event.payload;
         const raw = msg._data || {};
 
-        // Normalisasi URL media
         let media = null;
 
-        if (msg.media?.url) {
-
+        if (msg.media) {
             media = {
                 ...msg.media,
-                url: msg.media.url.replace("http://localhost:3000", "")
+
+                size: raw.size || null,
+
+                url: msg.media.url
+                    ? msg.media.url.replace("http://localhost:3000", "")
+                    : null
             };
-
-            // ===== DEBUG =====
-            // console.log("Original URL   :", msg.media.url);
-            // console.log("Normalized URL :", media.url);
-            // ================
-
         }
-        
 
         this.id = msg.id;
         this.session = event.session;
@@ -32,22 +28,22 @@ class Message {
         this.name = raw.notifyName || null;
 
         this.type = raw.type;
-
         this.body = msg.body;
 
         this.hasMedia = msg.hasMedia;
-
         this.media = media;
 
         this.timestamp = msg.timestamp;
 
-        // Simpan payload asli untuk debugging jika diperlukan
-        this.raw = event;
+        this.isGroup = msg.from.endsWith("@g.us");
 
+        this.caption = this.body || "";
+
+        this.command = this.caption.startsWith("#");
+
+        this.raw = event;
     }
 
 }
 
 module.exports = Message;
-
-

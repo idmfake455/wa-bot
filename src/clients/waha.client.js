@@ -1,13 +1,23 @@
-const axios = require("../config/axios");
+const api = require("./api.client");
 
-async function downloadMedia(url){
+async function sendText(to, text) {
 
-    return axios.get(url,{
-        responseType:"stream"
+    return api.post("/api/sendText", {
+        chatId: to,
+        text
+    });
+
+}
+
+async function downloadMedia(url) {
+
+    return api.get(url, {
+        responseType: "stream"
     });
 
 }
 
 module.exports = {
+    sendText,
     downloadMedia
 };

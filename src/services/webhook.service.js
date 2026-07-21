@@ -1,12 +1,14 @@
-const webhookDispatcher = require("../dispatchers/webhook.dispatcher");
+const Message = require("../models/message.model");
+const dispatcher = require("../dispatchers/message.dispatcher");
+const logger = require("../utils/logger");
 
-async function process(payload) {
+async function process(event) {
 
-    console.log(
-        `[Webhook] Event: ${payload.event} | Session: ${payload.session}`
-    );
+    const message = new Message(event);
 
-    return webhookDispatcher.dispatch(payload);
+    logger.message(message);
+
+    await dispatcher.dispatch(message);
 
 }
 

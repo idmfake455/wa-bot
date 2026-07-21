@@ -1,13 +1,13 @@
-async function handle(message){
+const mediaService = require("../services/media.service");
 
-    console.log("========== IMAGE ==========");
+async function handle(message) {
 
-    console.dir(message.media,{
-        depth:null
-    });
+    const media = await mediaService.download(message);
+
+    console.log(media);
 
 }
 
-module.exports={
+module.exports = {
     handle
 };
