@@ -1,8 +1,22 @@
 async function handleMessage(message) {
 
-    if (!message.hasMedia) {
+    const hasReplyMedia =
+        message.reply &&
+        message.reply.hasMedia;
+
+    if (!message.hasMedia && !hasReplyMedia) {
         return;
     }
+
+    console.log("================================");
+    console.log("HAS MEDIA :", message.hasMedia);
+    console.log("COMMAND :", message.command);
+
+    console.log("REPLY :", message.reply);
+    console.log("HAS REPLY :", !!message.reply);
+    console.log("HAS REPLY MEDIA :", message.reply?.hasMedia);
+    console.log("REPLY URL :", message.reply?.media?.url);
+    console.log("================================");
 
     console.log("================================");
     console.log("FROM :", message.from);

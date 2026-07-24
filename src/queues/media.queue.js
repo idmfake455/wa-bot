@@ -8,7 +8,7 @@ function getKey(message) {
 
     // Jika bagian album gunakan albumId
     // Jika single image gunakan message.id
-    const albumId = message.albumId || message.id.id;
+    const albumId = message.albumId || message.id;
 
     return `${message.to}_${message.from}_${albumId}`;
 
@@ -52,7 +52,7 @@ async function flush(key) {
     batch.messages.forEach((msg, index) => {
 
         console.log(
-            `${index + 1}. album=${msg.albumId} id=${msg.id.id} caption="${msg.body}"`
+            `${index + 1}. album=${msg.albumId} id=${msg.id} caption="${msg.body}"`
         );
 
     });
@@ -92,9 +92,9 @@ function push(message) {
 
     batch.messages.push(message);
 
-    console.log(
-        `[QUEUE] album=${message.albumId} file=${message.id.id} caption="${message.body}"`
-    );
+    // console.log(
+    //     `[QUEUE] album=${message.albumId} file=${message.id} caption="${message.body}"`
+    // );
 
     const command = parseCommand(message.body);
 

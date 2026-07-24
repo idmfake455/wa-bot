@@ -19,11 +19,35 @@ class Message {
             };
         }
 
+        let reply = null;
+
+        if (msg.replyTo) {
+
+            reply = {
+                id: msg.replyTo.id,
+                participant: msg.replyTo.participant,
+                body: msg.replyTo.body,
+                hasMedia: msg.replyTo.hasMedia,
+                media: msg.replyTo.media
+                    ? {
+                        ...msg.replyTo.media,
+                        url: msg.replyTo.media.url
+                            ? msg.replyTo.media.url.replace("http://localhost:3000", "")
+                            : null
+                    }
+                    : null
+            };
+
+        }
+
         this.id = msg.id;
         this.session = event.session;
 
         this.from = msg.from;
         this.to = msg.to;
+
+        this.albumId = msg.parentMsgKey?.id || raw.parentMsgKey?.id || null;
+        this.isAlbum = raw.type === "album";
 
         this.name = raw.notifyName || null;
 
@@ -32,6 +56,7 @@ class Message {
 
         this.hasMedia = msg.hasMedia;
         this.media = media;
+        this.reply = reply;
 
         this.timestamp = msg.timestamp;
 
@@ -42,6 +67,7 @@ class Message {
         this.command = this.caption.startsWith("#");
 
         this.raw = event;
+        
     }
 
 }

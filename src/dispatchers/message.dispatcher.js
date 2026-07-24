@@ -6,8 +6,13 @@ async function dispatch(message) {
     if (message.isAlbum) {
         return;
     }
-    
-    if (message.hasMedia) {
+
+    const hasReplyMedia =
+        message.reply &&
+        message.reply.hasMedia &&
+        message.command;
+
+    if (message.hasMedia || hasReplyMedia) {
 
         mediaQueue.push(message);
 
@@ -20,7 +25,5 @@ async function dispatch(message) {
 }
 
 module.exports = {
-
     dispatch
-
 };
