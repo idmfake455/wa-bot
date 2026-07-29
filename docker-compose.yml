@@ -1,15 +1,24 @@
 services:
+  waha:
+    image: devlikeapro/waha:latest
 
-  bot:
-
-    build:
-      context: .
-      dockerfile: docker/production/Dockerfile
+    container_name: waha
 
     ports:
-      - "3000:3000"
+      - "3331:3000"
 
     env_file:
       - .env.production
 
-    restart: always
+    environment:
+      WAHA_LOG_LEVEL: ${WAHA_LOG_LEVEL}
+      WAHA_API_KEY: ${WAHA_API_KEY}
+      WAHA_DASHBOARD_USERNAME: ${WAHA_DASHBOARD_USERNAME}
+      WAHA_DASHBOARD_PASSWORD: ${WAHA_DASHBOARD_PASSWORD}
+      WHATSAPP_SWAGGER_USERNAME: ${WHATSAPP_SWAGGER_USERNAME}
+      WHATSAPP_SWAGGER_PASSWORD: ${WHATSAPP_SWAGGER_PASSWORD}
+
+    volumes:
+      - ./sessions:/app/.sessions
+
+    restart: unless-stopped

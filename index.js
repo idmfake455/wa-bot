@@ -1,4 +1,15 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
+
+const fs = require("fs");
+const dotenv = require("dotenv");
+
+const envPath = fs.existsSync(".env.production")
+    ? ".env.production"
+    : ".env.dev";
+
+dotenv.config({
+    path: envPath
+});
 
 const app = require("./src/app");
 

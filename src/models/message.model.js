@@ -2,6 +2,7 @@ class Message {
 
     constructor(event) {
 
+        const MEDIA_BASE_URL = process.env.MEDIA_BASE_URL || "http://localhost:3000";
         const msg = event.payload;
         const raw = msg._data || {};
 
@@ -10,11 +11,9 @@ class Message {
         if (msg.media) {
             media = {
                 ...msg.media,
-
                 size: raw.size || null,
-
                 url: msg.media.url
-                    ? msg.media.url.replace("http://localhost:3000", "")
+                    ? msg.media.url.replace(MEDIA_BASE_URL, "")
                     : null
             };
         }
@@ -32,7 +31,7 @@ class Message {
                     ? {
                         ...msg.replyTo.media,
                         url: msg.replyTo.media.url
-                            ? msg.replyTo.media.url.replace("http://localhost:3000", "")
+                            ? msg.replyTo.media.url.replace(MEDIA_BASE_URL, "")
                             : null
                     }
                     : null

@@ -1,8 +1,8 @@
 const localStorage = require("../services/storage-local.service");
 const driveStorage = require("../services/storage-drive.service");
 
-// const driver = (process.env.STORAGE_DRIVER || "local").toLowerCase();
-const driver = ("local").toLowerCase();
+const driver = (process.env.STORAGE_DRIVER || "local").toLowerCase();
+// const driver = ("local").toLowerCase();
 
 
 async function saveStream(stream, filename, command) {
