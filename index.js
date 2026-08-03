@@ -11,6 +11,9 @@ dotenv.config({
 
 const app = require("./src/app");
 
+// Start Session Monitor
+require("./src/services/session-monitor.service");
+
 const PORT = process.env.BOT_PORT || 3000;
 
 app.listen(PORT, () => {
