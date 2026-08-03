@@ -27,26 +27,74 @@ async function checkSessions() {
             }
 
             await sendEmail(
-                `⚠️ WA Session ${sessionName} Down`,
+                `🚨 WhatsApp Session Down - ${sessionName}`,
                 `
-                <h2>WhatsApp Session Alert</h2>
+                <div style="font-family: Arial, Helvetica, sans-serif; font-size:14px; color:#333;">
+                    <h2 style="color:#d32f2f;">🚨 WhatsApp Session Alert</h2>
 
-                <table border="1" cellpadding="8">
-                    <tr>
-                        <td><b>Session</b></td>
-                        <td>${sessionName}</td>
-                    </tr>
+                    <p>
+                        Sistem mendeteksi bahwa salah satu WhatsApp session mengalami gangguan.
+                        Mohon segera lakukan pengecekan.
+                    </p>
 
-                    <tr>
-                        <td><b>Status</b></td>
-                        <td>${status}</td>
-                    </tr>
+                    <table style="border-collapse: collapse; width: 100%;">
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;"><b>Application</b></td>
+                            <td style="padding:8px;border:1px solid #ddd;">WA Bot</td>
+                        </tr>
 
-                    <tr>
-                        <td><b>Time</b></td>
-                        <td>${new Date().toLocaleString("id-ID")}</td>
-                    </tr>
-                </table>
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;"><b>Server</b></td>
+                            <td style="padding:8px;border:1px solid #ddd;">Production Server</td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;"><b>Session Name</b></td>
+                            <td style="padding:8px;border:1px solid #ddd;">${sessionName}</td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;"><b>Current Status</b></td>
+                            <td style="padding:8px;border:1px solid #ddd;color:red;">
+                                <b>${status}</b>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;"><b>Detected At</b></td>
+                            <td style="padding:8px;border:1px solid #ddd;">
+                                ${new Date().toLocaleString("id-ID")}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:8px;border:1px solid #ddd;"><b>Host</b></td>
+                            <td style="padding:8px;border:1px solid #ddd;">
+                                ${require("os").hostname()}
+                            </td>
+                        </tr>
+                    </table>
+
+                    <br>
+
+                    <b>Recommended Action</b>
+
+                    <ol>
+                        <li>Login ke server.</li>
+                        <li>Cek status WAHA.</li>
+                        <li>Pastikan session <b>${sessionName}</b> masih aktif.</li>
+                        <li>Restart session apabila diperlukan.</li>
+                        <li>Pastikan QR Code tidak perlu di-scan ulang.</li>
+                    </ol>
+
+                    <hr>
+
+                    <p style="color:#888;font-size:12px;">
+                        Email ini dikirim otomatis oleh WA Bot Monitoring.
+                        Mohon jangan membalas email ini.
+                    </p>
+
+                </div>
                 `
             );
 
