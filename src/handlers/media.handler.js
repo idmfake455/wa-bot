@@ -10,13 +10,21 @@ async function handle(batch) {
 
     for (const message of batch.messages) {
 
-        await mediaService.download(
+        try {
 
-            message,
+            await mediaService.download(
+                message,
+                batch.command
+            );
 
-            batch.command
+        } catch (err) {
 
-        );
+            console.error("[MEDIA] Failed processing message, command incorrect");
+            // console.error("[MEDIA] Message ID :", message.id);
+            // console.error("[MEDIA] Command    :", batch.command);
+            console.error("[MEDIA] Error      :", err);
+
+        }
 
     }
 

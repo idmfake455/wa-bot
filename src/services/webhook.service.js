@@ -6,9 +6,15 @@ async function process(event) {
 
     const message = new Message(event);
 
+    // console.log("========== MESSAGE ==========");
+    // console.log("Reply URL      :", message.reply?.media?.url);
+    // console.log("Direct Path    :", message.reply?.media?.directPath);
+    // console.log("Deprecated URL :", message.reply?.media?.deprecatedMms3Url);
+    // console.log("=============================");
+
     logger.message(message);
 
-    await dispatcher.dispatch(message);
+    dispatcher.dispatch(message);
 
 }
 

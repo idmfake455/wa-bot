@@ -27,13 +27,29 @@ function tempDirectory() {
 
 }
 
-function normalizeFolder(caption) {
+function normalizeFolder(command) {
 
-    return caption
-        .replace(/^#/, "")
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "_");
+    if (!command) {
+        return "UNKNOWN";
+    }
+
+    if (typeof command === "string") {
+
+        return command
+            .trim()
+            .replace(/[\\/:*?"<>|]/g, "_");
+
+    }
+
+    if (typeof command === "object") {
+
+        return command.folderName
+            ?.trim()
+            .replace(/[\\/:*?"<>|]/g, "_") || "UNKNOWN";
+
+    }
+
+    return "UNKNOWN";
 
 }
 

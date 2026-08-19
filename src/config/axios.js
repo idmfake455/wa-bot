@@ -10,8 +10,8 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     console.log("=== WAHA REQUEST ===");
-    console.log("URL:", config.baseURL + config.url);
-    console.log("Headers:", config.headers);
+    // console.log("URL:", config.baseURL + config.url);
+    // console.log("Headers:", config.headers);
     return config;
 });
 

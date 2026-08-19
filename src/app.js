@@ -2,7 +2,15 @@ const express = require("express");
 
 const app = express();
 
-app.use(express.json());
+// Naikkan limit request body
+app.use(express.json({
+    limit: "100mb"
+}));
+
+app.use(express.urlencoded({
+    extended: true,
+    limit: "100mb"
+}));
 
 app.get("/", (req, res) => {
     res.json({

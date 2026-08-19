@@ -22,23 +22,32 @@ class Message {
 
         if (msg.replyTo) {
 
+            const replyMedia =
+                msg.replyTo.media ||
+                msg.replyTo._data ||
+                raw.quotedMsg ||
+                null;
+
             reply = {
                 id: msg.replyTo.id,
                 participant: msg.replyTo.participant,
                 body: msg.replyTo.body,
                 hasMedia: msg.replyTo.hasMedia,
-                media: msg.replyTo.media
+
+                media: replyMedia
                     ? {
-                        ...msg.replyTo.media,
-                        url: msg.replyTo.media.url
-                            ? msg.replyTo.media.url.replace(MEDIA_BASE_URL, "")
-                            : null
+                        ...replyMedia,
+
+                        url:
+                            replyMedia.url
+                            || replyMedia.directPath
+                            || replyMedia.deprecatedMms3Url
+                            || null
                     }
                     : null
             };
 
         }
-
         this.id = msg.id;
         this.session = event.session;
 

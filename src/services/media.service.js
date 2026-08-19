@@ -1,12 +1,18 @@
 const path = require("path");
 const mime = require("mime-types");
 
+const checkpointService = require("./checkpoint.service");
+
 const Media = require("../models/media.model");
 
 const wahaClient = require("../clients/waha.client");
 const storageProvider = require("../providers/storage.provider");
 
 async function download(message, command) {
+    // console.log("===== DOWNLOAD INPUT =====");
+    // console.log("message.media      :", message.media);
+    // console.log("message.reply      :", message.reply);
+    // console.log("==========================");
 
     // ========================================
     // Tentukan media yang akan didownload
@@ -71,6 +77,21 @@ async function download(message, command) {
             command
 
         );
+
+    const chatId =
+        message.from.endsWith("@g.us")
+            ? message.from
+            : message.to;
+
+    checkpointService.markProcessed({
+
+        id: mediaId,
+
+        chatId,
+
+        timestamp: message.timestamp
+
+    });
 
     return new Media({
 
