@@ -75,8 +75,52 @@ function parseCommand(text) {
             keyword: "MINDO"
         },
         {
-            prefix: "#WH",
-            keyword: "WH"
+            prefix: "#WHRPSL",
+            keyword: "RPSL"
+        },
+        {
+            prefix: "#WHROHLIG",
+            keyword: "ROHLIG"
+        },
+        {
+            prefix: "#WHPPT",
+            keyword: "PPT"
+        },
+        {
+            prefix: "#WHMRA",
+            keyword: "MRA"
+        },
+        {
+            prefix: "#WHLOGWIN",
+            keyword: "LOGWIN"
+        },
+        {
+            prefix: "#WHLIMO",
+            keyword: "LIMO"
+        },
+        {
+            prefix: "#WHTETRA",
+            keyword: "TETRA"
+        },
+        {
+            prefix: "#WHMETSO",
+            keyword: "METSO"
+        },
+        {
+            prefix: "#WHHANOMAN",
+            keyword: "HANOMAN"
+        },
+        {
+            prefix: "#WHCATALITE",
+            keyword: "CATALITE"
+        },
+        {
+            prefix: "#WHBDP",
+            keyword: "BDP"
+        },
+        {
+            prefix: "#WHAPL",
+            keyword: "APL"
         }
     ];
 

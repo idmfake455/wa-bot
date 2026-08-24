@@ -13,7 +13,19 @@ const ROOT_FOLDERS = {
     FLOORING: "1nZ_BpPUUucLqIPMjQM5jeiHmPcjo6MWz",
     PLYWOOD: "1lG2Se5wq5VOa_PDYAW53sRRyqB8GFTju",
     CABINET: "1eO618BzLfWUD_95JlmnitC-oyDusejtB",
-    MINDO: "1CvbL3_oxV20EsoUMRX_7eqCX4BL6qIlX"
+    MINDO: "1CvbL3_oxV20EsoUMRX_7eqCX4BL6qIlX",
+    RPSL: "1oTVUKqf26eY2LBC0EMfeuOP8dO2xBKvf",
+    ROHLIG: "17lpYnPZokvf5-b1D3ER4-skWztxqBjRP",
+    PPT: "1Rx2AW85Xz4NYHq8z3-QVlwWju1PnnIas",
+    MRA: "18rxFdhvMfbPkkkBWGIYZQkfoBuc1S9Io",
+    LOGWIN: "1zGpJdYnxeaQ5RxmO1DUyx7899IFfZNff",
+    LIMO: "1EuRw-K4iLS77HqQRz5N2zCpA44Nu5HXS",
+    TETRA: "1e6OgtkxzYrTGsCKjl7pjh3MYfQL6Kjh9",
+    METSO: "1bO5reYsrY2JftjGSZWbtN0TiEP6Do-OH",
+    HANOMAN: "1SJpytia0uxcdAA_O6om3qN4CrGJ3wYzc",
+    CATALITE: "1xEPaqceorPvORah2-WfqFAUOdEif5gdB",
+    BDP: "1zQTbZXi9NsILPRkYRyLsXpG7JGf_ZvYH",
+    APL: "1oHCN92CpkX0rx4_NhQZuFDO7ZBU0Stw0"
 };
 
 const folderCache = new Map();
