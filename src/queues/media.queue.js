@@ -121,6 +121,10 @@ function parseCommand(text) {
         {
             prefix: "#WHAPL",
             keyword: "APL"
+        },
+        {
+            prefix: "#WH",
+            keyword: "WH"
         }
     ];
 
