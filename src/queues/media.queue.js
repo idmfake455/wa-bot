@@ -1,19 +1,61 @@
 const mediaHandler = require("../handlers/media.handler");
+const db = require("../config/sqlite");
+
 const batches = new Map();
-const WAIT_TIME = 3000;
+
+// ============================================================
+// Queue timing
+// ============================================================
+
+/*
+ * Single attachment:
+ * Tunggu 3 detik sebelum diproses.
+ */
+const SINGLE_WAIT_TIME = 3000;
+
+/*
+ * Album WhatsApp:
+ * WAHA dapat mengirim attachment album secara bertahap.
+ *
+ * Timer selalu di-reset setiap ada attachment baru dengan albumId
+ * yang sama.
+ */
+const ALBUM_WAIT_TIME = 15000;
 
 let processingCount = 0;
 let processing = Promise.resolve();
 
+// ============================================================
+// Batch key
+// ============================================================
+
 function getKey(message) {
 
-    // Jika bagian album gunakan albumId
-    // Jika single image gunakan message.id
+    // Jika bagian dari album gunakan albumId.
+    // Jika single media gunakan message.id.
     const albumId = message.albumId || message.id;
 
     return `${message.to}_${message.from}_${albumId}`;
 
 }
+
+function isAlbumMessage(message) {
+
+    return !!message.albumId;
+
+}
+
+function getWaitTime(message) {
+
+    return isAlbumMessage(message)
+        ? ALBUM_WAIT_TIME
+        : SINGLE_WAIT_TIME;
+
+}
+
+// ============================================================
+// Command parser
+// ============================================================
 
 function parseCommand(text) {
 
@@ -176,6 +218,91 @@ function parseCommand(text) {
 
 }
 
+// ============================================================
+// Persistent album command
+// ============================================================
+
+function saveAlbumCommand(key, message, command) {
+
+    if (!message.albumId || !command) {
+        return;
+    }
+
+    const now = Date.now();
+
+    db.prepare(`
+        INSERT INTO album_command
+        (
+            album_key,
+            album_id,
+            chat_from,
+            chat_to,
+            keyword,
+            folder_name,
+            created_at,
+            updated_at
+        )
+        VALUES
+        (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        ON CONFLICT(album_key)
+        DO UPDATE SET
+            album_id = excluded.album_id,
+            chat_from = excluded.chat_from,
+            chat_to = excluded.chat_to,
+            keyword = excluded.keyword,
+            folder_name = excluded.folder_name,
+            updated_at = excluded.updated_at
+    `).run(
+        key,
+        message.albumId,
+        message.from || null,
+        message.to || null,
+        command.keyword,
+        command.folderName,
+        now,
+        now
+    );
+
+    console.log(
+        `[QUEUE] Album command saved : ${message.albumId} -> ${command.keyword} / ${command.folderName}`
+    );
+
+}
+
+function getAlbumCommand(key) {
+
+    const row = db.prepare(`
+        SELECT
+            keyword,
+            folder_name
+        FROM album_command
+        WHERE album_key = ?
+    `).get(key);
+
+    if (!row) {
+        return null;
+    }
+
+    return {
+        keyword: row.keyword,
+        folderName: row.folder_name
+    };
+
+}
+
+// ============================================================
+// Flush batch
+// ============================================================
+
 async function flush(key) {
 
     const batch = batches.get(key);
@@ -186,6 +313,30 @@ async function flush(key) {
 
     batches.delete(key);
 
+    /*
+     * Jika batch tidak memiliki command, cari command dari database.
+     *
+     * Ini menangani kasus:
+     *
+     * Batch 1 : 5 file + caption command
+     * Batch 2 : 21 file + caption kosong
+     *
+     * Kedua batch memiliki albumId yang sama.
+     */
+    if (!batch.command && batch.albumId) {
+
+        batch.command = getAlbumCommand(key);
+
+        if (batch.command) {
+
+            console.log(
+                `[QUEUE] Command recovered from DB : ${batch.command.keyword} / ${batch.command.folderName}`
+            );
+
+        }
+
+    }
+
     console.log("\n========== BATCH ==========");
     console.log("Key      :", key);
     console.log("Command  :", batch.command);
@@ -194,7 +345,7 @@ async function flush(key) {
     batch.messages.forEach((msg, index) => {
 
         console.log(
-            `${index + 1}. album=${msg.albumId} id=${msg.id} caption="${msg.body}"`
+            `${index + 1}. album=${msg.albumId} id=${msg.id} caption="${msg.body || ""}"`
         );
 
     });
@@ -204,6 +355,7 @@ async function flush(key) {
     if (!batch.command) {
 
         console.log("Skip batch (tidak ada command)");
+
         return;
 
     }
@@ -228,9 +380,15 @@ async function flush(key) {
 
 }
 
+// ============================================================
+// Push message into queue
+// ============================================================
+
 function push(message) {
 
     const batchKey = getKey(message);
+
+    const waitTime = getWaitTime(message);
 
     let batch = batches.get(batchKey);
 
@@ -238,37 +396,93 @@ function push(message) {
 
         batch = {
 
-            command: null,
+            albumId: message.albumId || null,
+
+            command:
+                message.albumId
+                    ? getAlbumCommand(batchKey)
+                    : null,
+
             messages: [],
+
             timer: null
 
         };
 
-        batches.set(batchKey, batch);
+        batches.set(
+            batchKey,
+            batch
+        );
 
     }
 
-    batch.messages.push(message);
+    /*
+     * Jangan masukkan message yang sama dua kali ke batch.
+     */
+    const alreadyExists = batch.messages.some(
+        item => item.id === message.id
+    );
 
-    // console.log(
-    //     `[QUEUE] album=${message.albumId} file=${message.id} caption="${message.body}"`
-    // );
+    if (!alreadyExists) {
+
+        batch.messages.push(message);
+
+    }
 
     const command = parseCommand(message.body);
 
     if (command) {
+
         batch.command = command;
+
+        /*
+         * Hanya album yang disimpan secara persistent.
+         * Single message tidak perlu command mapping permanen.
+         */
+        if (message.albumId) {
+
+            saveAlbumCommand(
+                batchKey,
+                message,
+                command
+            );
+
+        }
+
     }
 
+    /*
+     * Setiap attachment baru mereset timer.
+     *
+     * Contoh:
+     *
+     * 10:14:00 -> file 1-5
+     * 10:14:03 -> file berikutnya
+     * 10:14:08 -> file berikutnya
+     *
+     * Timer terus mundur dari attachment TERAKHIR.
+     */
     clearTimeout(batch.timer);
 
     batch.timer = setTimeout(() => {
 
-        flush(batchKey);
+        flush(batchKey)
+            .catch(err => {
 
-    }, WAIT_TIME);
+                console.error(
+                    "[QUEUE] Flush failed:",
+                    err
+                );
+
+            });
+
+    }, waitTime);
 
 }
+
+// ============================================================
+// Queue status
+// ============================================================
 
 function isIdle() {
 
