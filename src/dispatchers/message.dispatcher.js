@@ -3,27 +3,60 @@ const chatHandler = require("../handlers/chat.handler");
 
 async function dispatch(message) {
 
-    if (message.isAlbum) {
-        return;
-    }
 
-    const hasReplyMedia =
-        message.reply &&
-        message.reply.hasMedia &&
-        message.command;
+// ============================================================
+// REPLY KE ALBUM
+// ============================================================
 
-    if (message.hasMedia || hasReplyMedia) {
+const isReplyToAlbum =
+    message.reply &&
+    message.reply.isAlbum === true;
 
-        mediaQueue.push(message);
 
-        return;
+// ============================================================
+// REPLY KE MEDIA BIASA
+// ============================================================
 
-    }
+const hasReplyMedia =
+    message.reply &&
+    message.reply.hasMedia === true &&
+    message.command;
 
-    return chatHandler.handle(message);
+
+// ============================================================
+// MESSAGE MEDIA BIASA
+// ============================================================
+
+const hasOwnMedia =
+    message.hasMedia === true;
+
+
+// ============================================================
+// MEDIA QUEUE
+// ============================================================
+
+if (
+    hasOwnMedia ||
+    hasReplyMedia ||
+    isReplyToAlbum
+) {
+
+    mediaQueue.push(message);
+
+    return;
+
+}
+
+
+// ============================================================
+// CHAT MESSAGE
+// ============================================================
+
+return chatHandler.handle(message);
+
 
 }
 
 module.exports = {
-    dispatch
+dispatch
 };

@@ -31,19 +31,40 @@ let processing = Promise.resolve();
 
 function getKey(message) {
 
-    // Jika bagian dari album gunakan albumId.
-    // Jika single media gunakan message.id.
-    const albumId = message.albumId || message.id;
+/*
+ * Prioritas album:
+ *
+ * 1. message.albumId
+ *    -> attachment asli album
+ *
+ * 2. message.reply.albumId
+ *    -> reply ke salah satu image album
+ *    -> reply langsung ke album
+ *
+ * 3. message.id
+ *    -> single media biasa
+ */
 
-    return `${message.to}_${message.from}_${albumId}`;
+const albumId =
+    message.albumId ||
+    message.reply?.albumId ||
+    message.id;
+
+return `${message.to}_${message.from}_${albumId}`;
+
 
 }
+
 
 function isAlbumMessage(message) {
 
-    return !!message.albumId;
+return !!(
+    message.albumId ||
+    message.reply?.albumId
+);
 
 }
+
 
 function getWaitTime(message) {
 
@@ -396,7 +417,10 @@ function push(message) {
 
         batch = {
 
-            albumId: message.albumId || null,
+            albumId:
+                message.albumId ||
+                message.reply?.albumId ||
+                null,
 
             command:
                 message.albumId
