@@ -68,117 +68,57 @@ async function checkSessions() {
 
             }
 
+
             // ====================================================
             // SESSION DOWN
             // ====================================================
 
-            // Jika status tidak berubah, jangan kirim email lagi
+            // Jika status tidak berubah, jangan proses ulang
             if (previousStatus === currentStatus) {
                 continue;
             }
 
-            try {
+            // Email alert hanya untuk environment production
+            if (process.env.NODE_ENV === "production") {
+                try {
+                    await sendEmail(
+                        `🚨 WhatsApp Session Down - ${sessionName}`,
+                        `
+                        <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#333;">
+                            <h2 style="color:#d32f2f;">🚨 WhatsApp Session Alert</h2>
+                            <p>Sistem mendeteksi bahwa salah satu WhatsApp session mengalami gangguan. Mohon segera lakukan pengecekan.</p>
+                            <table style="border-collapse:collapse;width:100%;">
+                                <tr><td style="padding:8px;border:1px solid #ddd;"><b>Application</b></td><td style="padding:8px;border:1px solid #ddd;">WA Bot Attachment Downloader</td></tr>
+                                <tr><td style="padding:8px;border:1px solid #ddd;"><b>Server</b></td><td style="padding:8px;border:1px solid #ddd;">Production Server</td></tr>
+                                <tr><td style="padding:8px;border:1px solid #ddd;"><b>Hostname</b></td><td style="padding:8px;border:1px solid #ddd;">${os.hostname()}</td></tr>
+                                <tr><td style="padding:8px;border:1px solid #ddd;"><b>Session Name</b></td><td style="padding:8px;border:1px solid #ddd;">${sessionName}</td></tr>
+                                <tr><td style="padding:8px;border:1px solid #ddd;"><b>Status</b></td><td style="padding:8px;border:1px solid #ddd;color:red;"><b>${currentStatus}</b></td></tr>
+                                <tr><td style="padding:8px;border:1px solid #ddd;"><b>Detected At</b></td><td style="padding:8px;border:1px solid #ddd;">${new Date().toLocaleString("id-ID")}</td></tr>
+                            </table>
+                            <br>
+                            <b>Recommended Action</b>
+                            <ol>
+                                <li>Login ke server.</li>
+                                <li>Periksa status Docker WAHA.</li>
+                                <li>Pastikan session <b>${sessionName}</b> masih tersedia.</li>
+                                <li>Restart session apabila diperlukan.</li>
+                                <li>Pastikan QR Code tidak perlu di-scan ulang.</li>
+                            </ol>
+                            <hr>
+                            <p style="font-size:12px;color:#888;">Email ini dikirim otomatis oleh WA Bot Monitoring.</p>
+                        </div>
+                        `
+                    );
 
-                await sendEmail(
-                    `🚨 WhatsApp Session Down - ${sessionName}`,
-                    `
-                    <div style="font-family: Arial, Helvetica, sans-serif; font-size:14px; color:#333;">
-
-                        <h2 style="color:#d32f2f;">
-                            🚨 WhatsApp Session Alert
-                        </h2>
-
-                        <p>
-                            Sistem mendeteksi bahwa salah satu WhatsApp session mengalami gangguan.
-                            Mohon segera lakukan pengecekan.
-                        </p>
-
-                        <table style="border-collapse: collapse; width: 100%;">
-
-                            <tr>
-                                <td style="padding:8px;border:1px solid #ddd;"><b>Application</b></td>
-                                <td style="padding:8px;border:1px solid #ddd;">
-                                    WA Bot Attachment Downloader
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td style="padding:8px;border:1px solid #ddd;"><b>Server</b></td>
-                                <td style="padding:8px;border:1px solid #ddd;">
-                                    Production Server
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td style="padding:8px;border:1px solid #ddd;"><b>Hostname</b></td>
-                                <td style="padding:8px;border:1px solid #ddd;">
-                                    ${os.hostname()}
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td style="padding:8px;border:1px solid #ddd;"><b>Session Name</b></td>
-                                <td style="padding:8px;border:1px solid #ddd;">
-                                    ${sessionName}
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td style="padding:8px;border:1px solid #ddd;"><b>Status</b></td>
-                                <td style="padding:8px;border:1px solid #ddd;color:red;">
-                                    <b>${currentStatus}</b>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td style="padding:8px;border:1px solid #ddd;"><b>Detected At</b></td>
-                                <td style="padding:8px;border:1px solid #ddd;">
-                                    ${new Date().toLocaleString("id-ID")}
-                                </td>
-                            </tr>
-
-                        </table>
-
-                        <br>
-
-                        <b>Recommended Action</b>
-
-                        <ol>
-                            <li>Login ke server.</li>
-                            <li>Periksa status Docker WAHA.</li>
-                            <li>Pastikan session <b>${sessionName}</b> masih tersedia.</li>
-                            <li>Restart session apabila diperlukan.</li>
-                            <li>Pastikan QR Code tidak perlu di-scan ulang.</li>
-                        </ol>
-
-                        <hr>
-
-                        <p style="font-size:12px;color:#888;">
-                            Email ini dikirim otomatis oleh WA Bot Monitoring.
-                        </p>
-
-                    </div>
-                    `
-                );
-
-                console.log(
-                    `[SESSION MONITOR] Email sent for ${sessionName} (${currentStatus})`
-                );
-
-            }
-            catch (err) {
-
-                console.error(
-                    "[EMAIL]",
-                    err.message
-                );
-
+                    console.log(
+                        `[SESSION MONITOR] Email sent for ${sessionName} (${currentStatus})`
+                    );
+                } catch (err) {
+                    console.error("[EMAIL]", err.message);
+                }
             }
 
-            sessionStates.set(
-                sessionName,
-                currentStatus
-            );
+            sessionStates.set(sessionName, currentStatus);
 
         }
 

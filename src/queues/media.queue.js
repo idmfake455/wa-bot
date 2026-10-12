@@ -186,6 +186,10 @@ function parseCommand(text) {
             keyword: "APL"
         },
         {
+            prefix: "#WHINTERPORT",
+            keyword: "INTERPORT"
+        },
+        {
             prefix: "#WH",
             keyword: "WH"
         }
